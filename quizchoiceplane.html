@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <link rel="icon" type="image" href="Physicslogo.png">
+<title>Quiz Question</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: rgba(45, 130, 133, 0.95);
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+  }
+
+  .quiz-box {
+    background: #61BACA;
+    padding: 25px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 0 15px rgba(255,255,255,0.2);
+    text-align: center;
+  }
+
+  h2 {
+    margin-bottom: 20px;
+    min-height: 3em; 
+  }
+
+  .answer {
+    background: rgba(0,0,0,0.4);
+    margin: 8px 0;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s, transform 0.1s;
+  }
+
+  .answer:hover {
+    background: rgba(255,255,255,0.2);
+    transform: scale(1.03);
+  }
+
+  .correct {
+    background: #2ecc71 !important;
+  }
+
+  .wrong {
+    background: #e74c3c !important;
+  }
+
+  #result {
+    margin-top: 15px;
+    font-size: 1.2em;
+    font-weight: bold;
+    min-height: 1.5em;
+  }
+
+  .btn {
+    display: none;
+    margin-top: 15px;
+    padding: 10px 18px;
+    background-color: #0b6f87;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  .btn:hover {
+    background-color: #094d5c;
+  }
+</style>
+</head>
+<body>
+  <div class="quiz-box">
+    <h2 id="question-text"></h2>
+    
+    <div id="answer-container"></div>
+
+    <div id="result"></div>
+    <button id="retry" class="btn">🔁 Retry</button>
+    <button id="next" class="btn">➡️ Next Question</button>
+  </div>
+
+<script>
+  const questionElement = document.getElementById('question-text');
+  const answerContainer = document.getElementById('answer-container');
+  const resultElement = document.getElementById('result');
+  const retryBtn = document.getElementById('retry');
+  const nextBtn = document.getElementById('next');
+
+  const quizData = [
+    {
+      question: "This image formed by a plane mirror is",
+      answers: [
+        { text: "Real image", correct: false },
+        { text: "Virtual image", correct: true },
+        { text: "Light image", correct: false }
+      ]
+    },
+    {
+      question: "We need total ___ apparatus for reflection by plane mirror experiment.",
+      answers: [
+        { text: "6", correct: false },
+        { text: "7", correct: false },
+        { text: "8", correct: true }
+      ]
+    },
+    {
+      question: "In the experiment, the mirror strip upright ___.",
+      answers: [
+        { text: "vertically", correct: true },
+        { text: "horizontally", correct: false },
+        { text: "inversely", correct: false }
+      ]
+    },
+    {
+      question: "We can do ___ method to explain about reflection by plane mirror. What are they?",
+      answers: [
+        { text: "1 method, Pin method", correct: false },
+        { text: "2 methods, Pin and light methods", correct: false },
+        { text: "2 methods, Line and Pin methods", correct: true }
+      ]
+    },
+    {
+      question: "According to plane mirror experiment,The angle of incidence is found to be equal to the angle of ____.",
+      answers: [
+        { text: "reflection", correct: true },
+        { text: "refraction", correct: false },
+        { text: "ray", correct: false }
+      ]
+    }
+  ];
+
+  let currentQuestionIndex = 0;
+
+  function loadQuestion() {
+    resultElement.textContent = '';
+    retryBtn.style.display = 'none';
+    nextBtn.style.display = 'none';
+    answerContainer.innerHTML = '';
+
+    let currentQuestion = quizData[currentQuestionIndex];
+    questionElement.textContent = currentQuestion.question;
+
+    currentQuestion.answers.forEach(answer => {
+      const answerDiv = document.createElement('div');
+      answerDiv.classList.add('answer');
+      answerDiv.textContent = answer.text;
+      
+      answerDiv.dataset.correct = answer.correct;
+
+      answerDiv.addEventListener('click', checkAnswer);
+      
+      answerContainer.appendChild(answerDiv);
+    });
+  }
+
+  function checkAnswer(e) {
+    const selectedAnswer = e.target;
+    const isCorrect = selectedAnswer.dataset.correct === 'true';
+    
+    const allAnswers = answerContainer.querySelectorAll('.answer');
+    allAnswers.forEach(a => a.style.pointerEvents = 'none');
+
+    if (isCorrect) {
+      selectedAnswer.classList.add('correct');
+      resultElement.textContent = '✅ Correct!';
+      
+      if (currentQuestionIndex < quizData.length - 1) {
+        nextBtn.style.display = 'inline-block'; 
+      } else {
+        resultElement.textContent = '🎉 Quiz Complete!';
+        retryBtn.textContent = '🔁 Restart Quiz'; 
+        retryBtn.style.display = 'inline-block';
+      }
+    } else {
+      selectedAnswer.classList.add('wrong');
+      resultElement.textContent = '❌ Incorrect!';
+      
+      allAnswers.forEach(a => {
+        if (a.dataset.correct === 'true') {
+          a.classList.add('correct');
+        }
+      });
+      
+      retryBtn.textContent = '🔁 Retry';
+      retryBtn.style.display = 'inline-block'; 
+    }
+  }
+
+  function retryQuiz() {
+
+    if (retryBtn.textContent.includes('Restart')) {
+      currentQuestionIndex = 0;
+    }
+    
+    loadQuestion();
+  }
+
+  function nextQuestion() {
+    currentQuestionIndex++;
+    if (currentQuestionIndex < quizData.length) {
+      loadQuestion();
+    }
+  }
+
+  retryBtn.addEventListener('click', retryQuiz);
+  nextBtn.addEventListener('click', nextQuestion);
+  
+  document.addEventListener('DOMContentLoaded', loadQuestion);
+
+</script>
+</body>
+</html>

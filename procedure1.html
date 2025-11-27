@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+   <link rel="icon" type="image" href="Physicslogo.png">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <title>Procedure(1) Line method</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+    
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, rgba(110, 226, 226, 0.9) 0%, #2eada9 100%);
+      color: #D7EAEE;
+      animation: fadeIn 1s ease-out;
+    }
+
+    nav {
+      height: 100vh;
+      width: 240px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background: rgba(20, 20, 20, 0.7); 
+      backdrop-filter: blur(20px); 
+      -webkit-backdrop-filter: blur(20px);
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 40px;
+      padding-left: 15px;
+      padding-right: 15px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 5px 0 25px rgba(0, 0, 0, 0.3);
+      z-index: 100;
+      animation: slideInFromLeft 1s ease-out;
+    }
+
+    nav a, .drop-trigger {
+      color: #aebbc9;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 500;
+      padding: 14px 20px; 
+      border-radius: 12px;
+      margin: 6px 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      transition: all 0.2s ease-out;
+      border: 1px solid transparent;
+      cursor: pointer;
+    }
+    
+    nav a i, .drop-trigger i {
+        width: 25px;
+        text-align: center;
+        margin-right: 12px;
+    }
+
+    nav a:hover, .drop-trigger:hover, nav a.active, .dropdown-content a:hover {
+      background: rgba(255, 255, 255, 0.1); 
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-top: 1px solid rgba(255, 255, 255, 0.4);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+      transform: translateY(-2px);
+    }
+
+    nav a.active {
+      background: rgba(255, 255, 255, 0.15);
+      font-weight: 600;
+    }
+
+    .dropdown {
+      position: relative;
+      width: 100%;
+      margin: 0;
+      z-index: 10;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      left: 100%; 
+      top: -10px;
+      background: rgba(30, 32, 35, 0.9);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      min-width: 220px;
+      border-radius: 12px;
+      padding: 10px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+      z-index: 120;
+    }
+
+    .dropdown-content a {
+        display: block;
+        text-align: left;
+        padding: 12px 20px;
+        font-size: 13px;
+        color: #d1d1d1;
+        text-decoration: none;
+        border-radius: 12px;
+        transition: all 0.2s ease-out;
+        border: 1px solid transparent;
+        margin: 2px 0;
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+      animation: fadeIn 0.2s ease-out;
+    }
+    
+    .dropdown:hover {
+        z-index: 101; 
+    }
+
+    .content {
+      margin-left: 240px;
+      padding: 50px;
+      animation: fadeInUp 1.2s ease;
+      min-height: 100vh;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      max-width: 900px;
+      margin: 30px auto;
+      transition: 0.4s;
+      line-height: 3rem;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    }
+    
+    h1 {
+      text-align: center;
+      font-size: 2.5em;
+      color: #163837;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+
+    h1::after {
+      content: "";
+      display: block;
+      width: 120px;
+      height: 3px;
+      background: #163837;
+      margin: 10px auto 20px;
+      border-radius: 2px;
+    }
+
+    p {
+      font-size: 1.1em;
+      line-height: 1.8;
+      color: #163837;
+    }
+    
+    ul {
+      font-size: 1.1em;
+      line-height: 1.8;
+      color: #163837;
+      padding-left: 20px;
+    }
+
+    li {
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      color: #163837;
+      padding-bottom: 5px;
+      margin-top: 30px;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 10px;
+      margin: 15px 0;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    
+    .footer {
+      text-align: center;
+      margin-top: 50px;
+      color: #ffffff;
+      font-size: 0.9em;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        margin-top: 30px;
+    }
+
+    .button-glow {
+        background: #9CD1CE;
+        color: #163837;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+    .button-glow:hover {
+        box-shadow: 0 0 10px #3EAEb1, 0 0 20px #163837;
+        transform: scale(1.05);
+    }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideInFromLeft { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    @media screen and (max-width: 768px) {
+      nav {
+        width: 100%;
+        height: auto;
+        min-height: 60px;
+        flex-direction: row;
+        justify-content: space-evenly;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        padding: 10px 5px;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      nav a, .drop-trigger {
+        padding: 8px;
+        width: auto;
+        margin: 0;
+        justify-content: center;
+      }
+
+      nav > a span, .drop-trigger span {
+          display: none; 
+      }
+      
+      nav a i, .drop-trigger i {
+          margin-right: 0;
+          font-size: 20px;
+      }
+
+      .dropdown {
+        width: auto;
+        position: relative;
+      }
+      .dropdown-content {
+        left: 50%;
+        transform: translateX(-50%); /* Center dropdown below icon */
+        top: 100%;
+        margin-top: 10px;
+      }
+
+      .content {
+        margin-left: 0;
+        padding: 20px;
+        padding-top: 100px; 
+      }
+
+      .card {
+        padding: 20px;
+        margin: 20px auto;
+        width: 100%;
+      }
+      
+      /* Typography Scale */
+      h1 { font-size: 1.8em; }
+      h2 { font-size: 1.4em; }
+      p, li { font-size: 1em; }
+
+      .button-group {
+          justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+ <nav>
+      <a href="index.html"><i class="fas fa-house"></i> <span>Home</span></a>
+      <a class="active" href="title1.html"><i class="fas fa-book"></i> <span>Title</span></a>
+
+      <div class="dropdown">
+       <a href="#" class="drop-trigger" onclick="event.preventDefault();">
+            <i class="fas fa-flask"></i> <span>Experiments</span>
+          </a>
+        <div class="dropdown-content">
+          <a href="apparatusforex6.html" style="font-size: 14px;">Apparatus for Experiment 6</a>
+          <a href="procedure1.html" style="font-size: 14px;">Procedure 1</a>
+          <a href="procedure2.html" style="font-size: 14px;">Procedure 2</a>
+          <a href="apparatusforex7.html" style="font-size: 14px;">Apparatus for Experiment 7</a>
+          <a href="procedure.html" style="font-size: 14px;">Procedure</a>
+        </div>
+      </div>
+
+      <a href="QandAfaq.html"><i class="fas fa-question-circle"></i> <span>Q & A</span></a>
+      <a href="quiz.html"><i class="fas fa-clipboard-check"></i> <span>Quiz</span></a>
+      <a href="minigame1.html"><i class="fas fa-gamepad"></i> <span>Mini Game</span></a>
+      <a href="aboutus.html"><i class="fas fa-users"></i> <span>About Us</span></a>
+ </nav>
+
+  <div class="content">
+    <div class="card" id="practical">
+      <h1>National ICT Award-2025<br>Grade 10 Practical Physics</h1>
+      <div>
+        <h2 class="card">Procedure (1) Line Method</h2>
+       </div>
+       <p>1. Draw the mirror surface line on the paper. On it place the mirror strip upright vertically.<br>
+        2. Make an object point in front of a mirror at a certain distance and draw the reflected line.<br>
+        3. Line up the ruler with the image of the incident ray and draw a line for the reflected ray.<br>
+        4. Take away the mirror and draw the normal at the point of incidence on the mirror surface line.<br>
+        5. Measure the angle of incidence and angle of reflection.<br>
+        6. Repeat the above procedure (steps 2 to 5) two more times by drawing other incident rays.<br>
+        7. Draw the three reflected rays produced backwards to meet at a point (image point).<br>
+        8. Measure the perpendicular distances of the object point and image point from the mirror line.<br>
+        9. Check whether these two distances are equal or not (i.e., u = v?).
+       </p>
+       
+       <img src="linemethod2.png" width="400" height="430" alt="Line Method Diagram">
+       <br>
+       
+       <h2>Precautions</h2>
+       <ul>
+          <li>The observer's eye must be in the plane of the rays and not too close to the mirror.</li>
+          <li>A hard-shape pencil must be used to get accurate angle measurements.</li>
+          <li>Parallax error must be avoided.</li>
+       </ul>
+       
+       <h2>Result</h2>
+       <p>For Procedure (1), object distance = image distance = ____ cm</p>
+       <br>
+       
+       <div class="button-group">
+          <a class="button-glow" onclick="window.location.href='quiz.html'">Q and A section</a>
+          <a href="title1.html" class="button-glow">← Back to Title</a>
+       </div>
+       
+       <div class="footer">
+        © 2025 Grade 10 Physics Practical | Designed by BEHS(1) Hpaan Grade-10
+       </div>
+    </div>
+  </div>
+</body>
+</html>

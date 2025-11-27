@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+   <link rel="icon" type="image" href="Physicslogo.png">
+  <title>Apparatus for experiment 6</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+    
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, rgba(110, 226, 226, 0.9) 0%, #2eada9 100%);
+      color: #D7EAEE;
+      animation: fadeIn 1s ease-out;
+    }
+
+     nav {
+      height: 100vh;
+      width: 240px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background: rgba(20, 20, 20, 0.7); 
+      backdrop-filter: blur(20px); 
+      -webkit-backdrop-filter: blur(20px);
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 40px;
+      padding-left: 15px;
+      padding-right: 15px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 5px 0 25px rgba(0, 0, 0, 0.3);
+      z-index: 100;
+      box-sizing: border-box;
+      animation: slideInFromLeft 1s ease-out;
+    }
+
+    nav a, .drop-trigger {
+      color: #aebbc9;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 500;
+      padding: 14px 20px; 
+      border-radius: 12px;
+      margin: 6px 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      transition: all 0.2s ease-out;
+      box-sizing: border-box;
+      border: 1px solid transparent;
+      cursor: pointer;
+    }
+    
+    nav a i, .drop-trigger i {
+        width: 25px;
+        text-align: center;
+        margin-right: 12px;
+    }
+
+    nav a:hover, .drop-trigger:hover, nav a.active, .dropdown-content a:hover {
+      background: rgba(255, 255, 255, 0.1); 
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-top: 1px solid rgba(255, 255, 255, 0.4);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+      transform: translateY(-2px);
+    }
+
+    nav a.active {
+      background: rgba(255, 255, 255, 0.15);
+      font-weight: 600;
+    }
+
+    .dropdown {
+      position: relative;
+      width: 100%;
+      margin: 0;
+      z-index: 10;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      left: 100%; 
+      top: -10px;
+      background: rgba(30, 32, 35, 0.9);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      
+      min-width: 220px;
+      border-radius: 12px;
+      padding: 10px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+      z-index: 120;
+      border-left: 5px solid transparent; 
+    }
+
+    .dropdown-content a {
+        display: block;
+        text-align: left;
+        padding: 12px 20px;
+        font-size: 13px;
+        color: #d1d1d1;
+        text-decoration: none;
+        border-radius: 12px;
+        transition: all 0.2s ease-out;
+        border: 1px solid transparent;
+        margin: 2px 0;
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+      animation: fadeIn 0.2s ease-out;
+    }
+    
+    .dropdown:hover {
+        z-index: 101; 
+    }
+    
+    main {
+      margin-left: 240px;
+      padding: 50px;
+      animation: fadeInUp 1s ease;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      max-width: 900px;
+      margin: 40px auto;
+      transition: 0.4s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.3em;
+      color: #163837;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      color: white;
+      border-bottom: 1px solid #163837;
+      padding-bottom: 5px;
+      margin-top: 30px;
+    }
+
+    h3 {
+      font-size: 1.05em;
+      line-height: 2;
+      color: #163837;
+    }
+
+    footer {
+      text-align: center;
+      margin: 40px 0;
+      color: #ffffff;
+      font-size: 0.9em;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideInFromLeft {
+      from { transform: translateX(-100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .button-glow {
+            background: #9CD1CE;
+            color: #163837;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s ease;
+          }
+          .button-glow:hover {
+            box-shadow: 0 0 10px #3EAEb1, 0 0 20px #163837;
+            transform: scale(1.05);
+          }
+        h3 {
+            color: #163837;
+            padding-bottom: 5px;
+            margin-top: 30px;
+            font-size: 23px;
+          }
+        p {
+      font-size: 1.1em;
+      line-height: 1.8;
+      color: #163837;
+        }
+
+    .apparatus-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .apparatus-grid div {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 15px;
+        border-radius: 10px;
+        transition: 0.3s;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .apparatus-grid div:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .apparatus-grid div img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin-bottom: 10px;
+    }
+
+    .apparatus-grid div h3 {
+        margin-top: 5px;
+        margin-bottom: 5px;
+        font-size: 1.2em;
+    }
+    
+    @media (max-width: 768px) {
+      nav {
+        flex-direction: row;
+        width: 100%;
+        height: auto;
+        padding: 10px 0;
+        justify-content: space-around;
+      }
+
+      nav a, .drop-trigger, .dropdown {
+        width: auto;
+        margin: 0 5px;
+        padding: 10px 14px;
+      }
+
+      nav a span, .drop-trigger span {
+          display: none; 
+      }
+      
+      nav a i, .drop-trigger i {
+          margin-right: 0;
+          font-size: 20px;
+      }
+
+      .dropdown-content {
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        min-width: 180px;
+      }
+
+      main {
+        margin-left: 0 !important;
+        padding: 20px;
+        padding-top: 80px; 
+      }
+      
+      .card {
+          margin: 20px auto;
+          padding: 20px;
+      }
+      
+      .apparatus-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 15px;
+      }
+      
+      h1 { font-size: 1.8em; }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <nav>
+      <a href="index.html"><i class="fas fa-house"></i> <span>Home</span></a>
+      <a  class="active" href="title1.html"><i class="fas fa-book"></i> <span>Title</span></a>
+
+      <div class="dropdown">
+        <a href="#" class="drop-trigger" onclick="event.preventDefault();">
+      <i class="fas fa-flask"></i> <span>Experiments</span>
+          </a>
+        <div class="dropdown-content">
+          <a href="apparatusforex6.html" style="font-size: 14px;">Apparatus for Experiment 6</a>
+          <a href="procedure1.html" style="font-size: 14px;">Procedure 1</a>
+          <a href="procedure2.html" style="font-size: 14px;">Procedure 2</a>
+          <a href="apparatusforex7.html" style="font-size: 14px;">Apparatus for Experiment 7</a>
+          <a href="procedure.html" style="font-size: 14px;">Procedure</a>
+        </div>
+      </div>
+
+       <a href="QandAfaq.html"><i class="fas fa-question-circle"></i> <span>Q & A</span></a>
+      <a href="quiz.html"><i class="fas fa-clipboard-check"></i> <span>Quiz</span></a>
+      <a href="minigame1.html"><i class="fas fa-gamepad"></i> <span>Mini Game</span></a>
+      <a href="aboutus.html"><i class="fas fa-users"></i> <span>About Us</span></a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="card" id="intro">
+      <h1>National ICT Award 2025<br>Grade 10 Practical Physics</h1>
+      <h3>
+        This page show how to use each apparatus in the Experiment 6
+      </h3>
+    </section>
+
+    <section class="card" id="exp6-apparatus">
+      <h2 style="color: #163837;">Experiment 6: Apparatus</h2>
+      <div class="apparatus-grid">
+        <div>
+            <h3>Protractor</h3>
+            <img src="protractor.jpg" alt="protractor" width="230" height="200">
+            <p>measure the angle between the ray and the normal (angles of incidence and reflection). Use its center on the point where the ray meets the mirror.</p>        </div>
+        <div>
+            <h3>Ruler</h3>
+            <img src="ruler.jpg" alt="ruler" width="230"  height="200">
+            <p>draw straight rays and the normal line, and measure distances (to place protractor correctly or position pins/marks).</p>
+        </div>
+        <div>
+            <h3>Paper</h3>
+             <img src="paper.jpg" alt="paper" width="230"  height="200">
+             <p>workspace on which you draw the incident ray, normal, reflected ray, and mark points; tape the paper to the board so it doesn’t move.</p>
+        </div>
+        <div>
+            <h3>Mirrorstrip</h3>
+            <img src="mirrorstrip.jpg" alt="mirrorstrip">
+            <p>(a small, narrow plane mirror) — the reflecting surface. Easy to rotate to change the angle; good when you want to show a clean, flat reflection in a small area.</p>
+        </div>
+        <div>
+            <h3>Clip</h3>
+            <img src="clip.jpg" alt="clip">
+            <p>(paper clip / bulldog clip) — hold the mirror or paper in place on the drawing board (or clip the paper to the board so it doesn’t slide).</p>
+        </div>
+        <div>
+            <h3>Colorpencil</h3>
+            <img src="colorpencil.jpg" alt="colorpencil" width="230"  height="200">
+            <p>(different colors) — mark the incident ray, normal, reflected ray, and measured angles in different colours so the diagram is clear.</p>
+        </div>
+        <div>
+            <h3>Plane mirror(7cm by 15cm)</h3>
+            <img src="planemirror2.jpg" alt="planemirror" width="230"  height="200">
+            <p>(larger flat mirror) — same function as mirror strip; better if you want a bigger visible reflected beam or to show image formation. Use whichever you have — both are plane mirrors (flat).</p>
+        </div>
+        <div>
+            <h3>Drawingboard</h3>
+            <img src="drawingboard.jpg" alt="drawingboard" width="230"  height="200">
+           <p>flat, firm base to fix the paper and do accurate drawing and measurements. It keeps everything steady.</p>
+        </div>
+      </div>
+      <br>
+      <a href="title1.html" class="button-glow">← Back to Title</a>
+    </section>
+    <footer>
+      © 2025 Grade 10 Physics Practical | Designed by BEHS(1) Hpaan Grade-10
+    </footer>
+  </main>
+</body>
+</html>

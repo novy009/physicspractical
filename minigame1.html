@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+     <link rel="icon" type="image" href="Physicslogo.png">
+    <title>Mini game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+        body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, rgba(110, 226, 226, 0.9) 0%, #2eada9 100%);
+      color: #D7EAEE;
+      animation: fadeIn 1s ease-out;
+    }
+    nav {
+      height: 100vh;
+      width: 240px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background: rgba(20, 20, 20, 0.7); 
+      backdrop-filter: blur(20px); 
+      -webkit-backdrop-filter: blur(20px);
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 40px;
+      padding-left: 15px;
+      padding-right: 15px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 5px 0 25px rgba(0, 0, 0, 0.3);
+      z-index: 100;
+      box-sizing: border-box;
+      animation: slideInFromLeft 1s ease-out;
+    }
+
+    nav a, .drop-trigger {
+      color: #aebbc9;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 500;
+      padding: 14px 20px; 
+      border-radius: 12px;
+      margin: 6px 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      transition: all 0.2s ease-out;
+      box-sizing: border-box;
+      border: 1px solid transparent;
+      cursor: pointer;
+    }
+    
+    nav a i, .drop-trigger i {
+        width: 25px;
+        text-align: center;
+        margin-right: 12px;
+    }
+
+    nav a:hover, .drop-trigger:hover, nav a.active, .dropdown-content a:hover {
+      background: rgba(255, 255, 255, 0.1); 
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-top: 1px solid rgba(255, 255, 255, 0.4);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+      transform: translateY(-2px);
+    }
+
+    nav a.active {
+      background: rgba(255, 255, 255, 0.15);
+      font-weight: 600;
+    }
+
+    .dropdown {
+      position: relative;
+      width: 100%;
+      margin: 0;
+      z-index: 10;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      left: 100%; 
+      top: -10px;
+      background: rgba(30, 32, 35, 0.9);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      
+      min-width: 220px;
+      border-radius: 12px;
+      padding: 10px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+      z-index: 120;
+      border-left: 5px solid transparent; 
+    }
+
+    .dropdown-content a {
+        display: block;
+        text-align: left;
+        padding: 12px 20px;
+        font-size: 13px;
+        color: #d1d1d1;
+        text-decoration: none;
+        border-radius: 12px;
+        transition: all 0.2s ease-out;
+        border: 1px solid transparent;
+        margin: 2px 0;
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+      animation: fadeIn 0.2s ease-out;
+    }
+    
+    .dropdown:hover {
+        z-index: 101; 
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideInFromLeft {
+      from { 
+        transform: translateX(-100%); 
+        opacity: 0;
+      }
+      to { 
+        transform: translateX(0); 
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideInFromLeft { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    @media screen and (max-width: 768px) {
+      
+      nav {
+        width: 100%;
+        height: auto;
+        min-height: 60px;
+        flex-direction: row;
+        justify-content: space-evenly;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        padding: 10px 5px;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      nav a, .drop-trigger {
+        padding: 8px;
+        width: auto;
+        font-size: 14px;
+        margin: 0;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      nav a span, .drop-trigger span {
+          display: none; 
+      }
+      
+      nav a i, .drop-trigger i {
+          margin-right: 0;
+          font-size: 20px; 
+          margin-bottom: 0;
+      }
+
+      .content {
+        margin-left: 0; 
+        padding: 15px;  
+        padding-top: 100px; 
+      }
+
+      .card {
+        padding: 20px; 
+        width: 100%;   
+        margin: 0;
+      }
+      
+      h1 { font-size: 1.8em; }
+      h2 { font-size: 1.4em; margin-top: 20px; }
+      p, ul { font-size: 1em; }
+
+      .grid-container, .grid-container2 {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 15px;
+      }
+    }
+    
+    .animated-border-box {
+        position: relative;
+        overflow: hidden;
+        padding: 10px; 
+        border-radius: 1rem; 
+        z-index: 0;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .animated-border-box::before {
+        content: '';
+        position: absolute;
+        width: 200%; 
+        height: 200%;
+        top: -50%;
+        left: -50%;
+        z-index: -1;
+        background: conic-gradient(
+            #0a9fb9,
+            #3875d8, 
+            #6d4ac0, 
+            #ca3d84, 
+            #09b6a7  
+        );
+        
+        animation: border-spin 4s linear infinite;
+    }
+
+  
+
+    .info-text-box p {
+        animation: fadeIn 0.8s ease-out forwards;
+        font-size: 1.1rem;
+        line-height: 1.75; 
+        padding: 0 8px; 
+    }
+
+    .info-text-box strong {
+        font-size: 1.3rem; 
+        color: #163837;
+        font-weight: 700; 
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.25); 
+        display: block; 
+        margin-bottom: 12px; 
+    }
+
+    </style>
+</head>
+<body class="bg- rgba(53, 150, 154, 0.95) text-white min-h-screen">
+    <header>
+     <nav>
+  <a href="index.html"><i class="fas fa-house"></i> Home</a>
+  <a href="title1.html"><i class="fas fa-book"></i> Title</a>
+  <a href="QandAfaq.html"><i class="fas fa-question-circle"></i> Q & A</a>
+  <a href="quiz.html"><i class="fas fa-clipboard-check"></i> Quiz</a>
+  <a class="active" href="minigame1.html"><i class="fas fa-gamepad"></i> Mini Game</a>
+  <a href="aboutus.html"><i class="fas fa-users"></i> About Us</a>
+</nav>
+  </header>
+
+    <main class="min-h-screen pt-20 md:pt-8 md:ml-[240px] p-4 md:p-8 flex flex-col items-center">
+
+        <div class="flex flex-col gap-10 w-full">
+
+            <div class="animated-border-box w-full max-w-4xl mx-auto">
+                <div class="rounded-lg p-6 w-full h-[480px] flex flex-col relative z-10" style="background-color: #61BACA;">
+                    <h2 class="text-2xl font-bold mb-4 text-cyan-400" style="color: #163837; text-align: center;">Welcome form our Game(Normal)</h2>
+                    
+                    <div class="text-gray-200 bg-white p-3 rounded-md flex-grow overflow-auto
+                                focus:outline-none focus:ring-2 focus:ring-fuchsia-500 info-text-box"
+                        style="background-color: #5cbff8; color: #163837;">
+                       <p>
+                        <strong>HOW TO PLAY</strong>
+                        <ul style="font-size: 18px;">
+                          <li>1.Adjust the mirror angle using the slider (or drag the mirror on the screen).
+
+                          <li>2.Click Fire Ray to send a light ray from the source.</li>
+
+                          <li>3.Watch where the reflected ray goes.</li>
+
+                          <li>4.If the ray misses the target, change the mirror angle and try again.</li>
+
+                          <li>5.When the ray hits the yellow target, you score points and move to the next level.</li>
+
+                          <li>6.Click Reset Level if you want to restart the current level.</li>
+
+                          <li>7.You can use Auto Aim to automatically set the correct mirror angle.</li>
+                        </ul>
+                       </p>
+                    </div>
+
+                    <button class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded-lg mt-4
+                                   transition-colors duration-200
+                                   focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 focus:ring-offset-gray-800" onclick="window.location.href='game2.html'">
+                        Play Now
+                    </button>
+                </div>
+            </div>
+
+            <div class="animated-border-box w-full max-w-4xl mx-auto">
+                <div class="rounded-lg p-6 w-full h-[480px] flex flex-col relative z-10" style="background-color: #61BACA;">
+                    <h2 class="text-2xl font-bold mb-4 text-cyan-400" style="color: #163837; text-align: center;">Welcome form our Game(Advance)</h2>
+                    
+                    <div class="text-gray-200 bg-white p-3 rounded-md flex-grow overflow-auto
+                                focus:outline-none focus:ring-2 focus:ring-fuchsia-500 info-text-box"
+                        style="background-color: #5cbff8; color: #163837;">
+                        <p>
+                      <strong> HOW TO PLAY </strong> 
+                <ul>
+                   <li>1.Your mission is to guide the laser beam from the blue source to the glowing target to charge it to 100%.</li>
+
+                   <li>2.Drag the BLUE CIRCLE up/down to change the laser height.</li>
+
+                    <li>3.Drag the GOLD MIRROR to move it around the field.</li>
+
+                    <li>4.Use the rotation slider to change the mirror angle so the laser reflects correctly.</li>
+
+                   <li>5.When the reflected beam hits the target, the charging increases. Reach 100% to advance to the next level.</li>
+
+                   <li>6.Avoid the RED WALL obstacles. They will block the beam. Higher levels include stronger or moving walls.</li>
+
+                    <li>7.Click "EMP BLAST" to freeze the obstacles for 10 seconds. Then wait for cooldown before using it again.</li>
+
+                    <li>8.If you need to restart the level, click "Reset Sector".</li>
+                    </ul>
+                    </p>
+                    </div>
+
+                    <button class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded-lg mt-4
+                                   transition-colors duration-200
+                                   focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 focus:ring-offset-gray-800" onclick="window.location.href='gameadvanced.html'">
+                        Play Now
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</body>
+</html>

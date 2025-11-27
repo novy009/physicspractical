@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+   <link rel="icon" type="image" href="Physicslogo.png">
+  <title>Apparatus for experiment 7</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+    
+     body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, rgba(110, 226, 226, 0.9) 0%, #2eada9 100%);
+      color: #D7EAEE;
+      animation: fadeIn 1s ease-out;
+    }
+
+     nav {
+      height: 100vh;
+      width: 240px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background: rgba(20, 20, 20, 0.7); 
+      backdrop-filter: blur(20px); 
+      -webkit-backdrop-filter: blur(20px);
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 40px;
+      padding-left: 15px;
+      padding-right: 15px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 5px 0 25px rgba(0, 0, 0, 0.3);
+      z-index: 100;
+      box-sizing: border-box;
+      animation: slideInFromLeft 1s ease-out;
+    }
+
+    nav a, .drop-trigger {
+      color: #aebbc9;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 500;
+      padding: 14px 20px; 
+      border-radius: 12px;
+      margin: 6px 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      transition: all 0.2s ease-out;
+      box-sizing: border-box;
+      border: 1px solid transparent;
+      cursor: pointer;
+    }
+    
+    nav a i, .drop-trigger i {
+        width: 25px;
+        text-align: center;
+        margin-right: 12px;
+    }
+
+    nav a:hover, .drop-trigger:hover, nav a.active, .dropdown-content a:hover {
+      background: rgba(255, 255, 255, 0.1); 
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-top: 1px solid rgba(255, 255, 255, 0.4);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+      transform: translateY(-2px);
+    }
+
+    nav a.active {
+      background: rgba(255, 255, 255, 0.15);
+      font-weight: 600;
+    }
+
+    .dropdown {
+      position: relative;
+      width: 100%;
+      margin: 0;
+      z-index: 10;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      left: 100%; 
+      top: -10px;
+      background: rgba(30, 32, 35, 0.9);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      
+      min-width: 220px;
+      border-radius: 12px;
+      padding: 10px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+      z-index: 120;
+      border-left: 5px solid transparent; 
+    }
+
+    .dropdown-content a {
+        display: block;
+        text-align: left;
+        padding: 12px 20px;
+        font-size: 13px;
+        color: #d1d1d1;
+        text-decoration: none;
+        border-radius: 12px;
+        transition: all 0.2s ease-out;
+        border: 1px solid transparent;
+        margin: 2px 0;
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+      animation: fadeIn 0.2s ease-out;
+    }
+    
+    .dropdown:hover {
+        z-index: 101; 
+    }
+
+    main {
+      margin-left: 240px;
+      padding: 50px;
+      animation: fadeInUp 1s ease;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      max-width: 900px;
+      margin: 40px auto;
+      transition: 0.4s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.3em;
+      color: #163837;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      color: #163837;
+      border-bottom: 1px solid #163837;
+      padding-bottom: 5px;
+      margin-top: 30px;
+    }
+
+    h3 {
+      font-size: 1.05em;
+      line-height: 2;
+      color: #163837;
+    }
+
+    footer {
+      text-align: center;
+      margin: 40px 0;
+      color: #ffffff;
+      font-size: 0.9em;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideInFromLeft {
+      from { transform: translateX(-100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .button-glow {
+            background: #9CD1CE;
+            color: #163837;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s ease;
+          }
+          .button-glow:hover {
+            box-shadow: 0 0 10px #3EAEb1, 0 0 20px #163837;
+            transform: scale(1.05);
+          }
+          h3 {
+            color: #163837;
+            padding-bottom: 5px;
+            margin-top: 30px;
+            font-size: 23px;
+          }
+        p {
+      font-size: 1.1em;
+      line-height: 1.8;
+      color: #163837;
+        }
+
+    .apparatus-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .apparatus-grid div {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 15px;
+        border-radius: 10px;
+        transition: 0.3s;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .apparatus-grid div:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .apparatus-grid div img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin-bottom: 10px;
+    }
+
+    .apparatus-grid div h3 {
+        margin-top: 5px;
+        margin-bottom: 5px;
+        font-size: 1.2em;
+    }
+
+    @media (max-width: 768px) {
+      nav {
+        flex-direction: row;
+        width: 100%;
+        height: auto;
+        padding: 10px 0;
+        justify-content: space-around;
+        position: fixed;
+        top: 0;
+        left: 0;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      nav a, .drop-trigger, .dropdown {
+        width: auto;
+        margin: 0 5px;
+        padding: 10px 14px;
+      }
+      
+      nav a span, .drop-trigger span {
+          display: none; 
+      }
+      
+      nav a i, .drop-trigger i {
+          margin-right: 0;
+          font-size: 20px;
+      }
+
+      .dropdown-content {
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        min-width: 180px;
+      }
+
+      main {
+        margin-left: 0;
+        padding: 20px;
+        padding-top: 80px;
+      }
+      
+      .card {
+          margin: 20px auto;
+          padding: 20px;
+      }
+      
+      .apparatus-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 15px;
+      }
+      
+      h1 { font-size: 1.8em; }
+      
+      .apparatus-grid div h3 {
+          font-size: 1em;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <nav>
+      <a href="home2.html"><i class="fas fa-house"></i> <span>Home</span></a>
+      <a  class="active" href="title1.html"><i class="fas fa-book"></i> <span>Title</span></a>
+
+      <div class="dropdown">
+        <a href="#" class="drop-trigger" onclick="event.preventDefault();">
+      <i class="fas fa-flask"></i> <span>Experiments</span>
+          </a>
+        <div class="dropdown-content">
+          <a href="apparatusforex6.html" style="font-size: 14px;">Apparatus for Experiment 6</a>
+          <a href="procedure1.html" style="font-size: 14px;">Procedure 1</a>
+          <a href="procedure2.html" style="font-size: 14px;">Procedure 2</a>
+          <a href="apparatusforex7.html" style="font-size: 14px;">Apparatus for Experiment 7</a>
+          <a href="procedure.html" style="font-size: 14px;">Procedure</a>
+        </div>
+      </div>
+
+       <a href="QandAfaq.html"><i class="fas fa-question-circle"></i> <span>Q & A</span></a>
+      <a href="quiz.html"><i class="fas fa-clipboard-check"></i> <span>Quiz</span></a>
+      <a href="minigame1.html"><i class="fas fa-gamepad"></i> <span>Mini Game</span></a>
+      <a href="aboutus.html"><i class="fas fa-users"></i> <span>About Us</span></a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="card" id="intro">
+      <h1>National ICT Award 2025<br>Grade 10 Practical Physics</h1>
+      <h3>
+        This page show how to use each apparatus in the Experiment 7.
+      </h3>
+    </section>
+
+    <section class="card" id="exp6-apparatus">
+      <h2>Experiment 7: Apparatus</h2>
+      <div class="apparatus-grid">
+        <div>
+            <h3>Optical Bench</h3>
+            <img src="optical.jpg" alt="optical bench" width="230" height="200">
+            <p>Place all the apparatus (mirror, pins, etc.) along the bench so they lie on the same straight line (optical axis). Use its scale to measure distances between objects and images accurately.</p>    
+        </div>
+        <div>
+            <h3>Search Pin</h3>
+            <img src="pin.jpg" alt="searchpin" width="230"  height="200">
+            <p>Stick one pin (object pin) in front of the mirror at a measured distance. Move another pin (search pin) along the bench to locate where the image forms by removing parallax (no relative motion between pins seen through the mirror).</p>
+        </div>
+        <div>
+            <h3>Concave mirror stand</h3>
+             <img src="concavestand.jpg" alt="concavemirror" width="230"  height="200">
+             <p>Mount the mirror on its stand and place it vertically on the optical bench. The reflecting surface should face the object pin. Used to reflect light and form a real or virtual image of the object.<br>
+            Mirror stand is to holds the concave mirror firmly in an upright position on the optical bench.</p>
+        </div>
+        <div>
+            <h3>White paper(screen)</h3>
+            <img src="paper.jpg" alt="whitepaper" width="230"  height="200">
+            <p>Place it behind or under the optical bench to help see the pin positions clearly and mark points for measurement.</p>
+        </div>
+        <div>
+            <h3>Meterstick</h3>
+            <img src="meterstick.jpg" alt="meterstick" width="230"  height="200">
+            <p>Use it to measure distances between the mirror, object pin, and image pin (along the optical axis).</p>
+        </div>
+      </div>
+        <br>
+        <a href="title1.html" class="button-glow">← Back to Title</a>
+    </section>
+    <footer>
+       © 2025 Grade 10 Physics Practical | Designed by BEHS(1) Hpaan Grade-10
+    </footer>
+  </main>
+</body>
+</html>
