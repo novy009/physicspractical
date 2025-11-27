@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+   <link rel="icon" type="image" href="Physicslogo.png">
+  <title>Home</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+    
+    * {
+        box-sizing: border-box; 
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, rgba(110, 226, 226, 0.9) 0%, #2eada9 100%);
+      color: #D7EAEE;
+      animation: fadeIn 1s ease-out;
+    }
+
+    nav {
+      height: 100vh;
+      width: 240px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background: rgba(20, 20, 20, 0.7); 
+      backdrop-filter: blur(20px); 
+      -webkit-backdrop-filter: blur(20px);
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 40px;
+      padding-left: 15px;
+      padding-right: 15px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 5px 0 25px rgba(0, 0, 0, 0.3);
+      z-index: 100;
+      animation: slideInFromLeft 1s ease-out;
+    }
+
+    nav a, .drop-trigger {
+      color: #aebbc9;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 500;
+      padding: 14px 20px; 
+      border-radius: 12px;
+      margin: 6px 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      transition: all 0.2s ease-out;
+      border: 1px solid transparent;
+      cursor: pointer;
+    }
+    
+    nav a i, .drop-trigger i {
+        width: 25px;
+        text-align: center;
+        margin-right: 12px;
+    }
+
+    nav a:hover, .drop-trigger:hover, nav a.active, .dropdown-content a:hover {
+      background: rgba(255, 255, 255, 0.1); 
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-top: 1px solid rgba(255, 255, 255, 0.4);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+      transform: translateY(-2px);
+    }
+
+    nav a.active {
+      background: rgba(255, 255, 255, 0.15);
+      font-weight: 600;
+    }
+
+    .content {
+      margin-left: 240px;
+      padding: 50px;
+      animation: fadeInUp 1.2s ease;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 30px; 
+    }
+
+    .card {
+      background: rgba(215, 234, 238, 0.1);
+      border-radius: 20px;
+      padding: 30px; 
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto; 
+      transition: 0.4s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.5em;
+      color:  #163837;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+
+    h1::after {
+      content: "";
+      display: block;
+      width: 120px;
+      height: 3px;
+      background: black;
+      margin: 10px auto 20px;
+      border-radius: 2px;
+    }
+
+    p, ul {
+      font-size: 1.1em;
+      line-height: 1.8;
+      color:  #163837;
+    }
+    
+    ul { padding-left: 20px; }
+    li { margin-bottom: 10px; }
+
+    h2 {
+      color:  #163837;
+      padding-bottom: 5px;
+      margin-top: 30px;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 10px;
+      margin: 15px 0;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+      color: #ffffff;
+      font-size: 0.9em;
+      width: 100%;
+    }
+
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+    }
+    .grid-container2 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+    
+    .product, .product2 {
+        background: #2577b8;
+        border-radius: 10px;
+        text-align: center;
+    }
+    .product2 { background: #25787b; }
+
+    .button-glow {
+        background: #9CD1CE;
+        color: #1a5553;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: 0.3s ease;
+        margin-top: 10px;
+        width: 100%;
+        max-width: 400px;
+    }
+    .button-glow:hover {
+        box-shadow: 0 0 10px #3EAEb1, 0 0 20px #163837;
+        transform: scale(1.05);
+    }
+    .slide-btn {
+        background-color: #25787b;
+        color: white;
+        padding: 20px 10px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 80px;
+        margin: 0;
+    }
+    .slide-btn:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px #3EAEb1, 0 0 20px #96dcfd;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideInFromLeft { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    @media screen and (max-width: 768px) {
+      
+      nav {
+        width: 100%;
+        height: auto; 
+        min-height: 60px;
+        flex-direction: row;
+        justify-content: space-evenly; 
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        padding: 10px 5px;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      nav a, .drop-trigger {
+        padding: 8px;
+        width: auto;
+        font-size: 14px;
+        margin: 0;
+        flex-direction: column; 
+        justify-content: center;
+      }
+
+      nav a span, .drop-trigger span {
+          display: none; 
+      }
+      
+      nav a i, .drop-trigger i {
+          margin-right: 0;
+          font-size: 20px; 
+          margin-bottom: 0;
+      }
+
+      .content {
+        margin-left: 0; 
+        padding: 15px;  
+        padding-top: 100px; 
+      }
+
+      .card {
+        padding: 20px; 
+        width: 100%;   
+        margin: 0;
+      }
+      
+      h1 { font-size: 1.8em; }
+      h2 { font-size: 1.4em; margin-top: 20px; }
+      p, ul { font-size: 1em; }
+
+      .grid-container, .grid-container2 {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="active" href="index.html"><i class="fas fa-house"></i> <span>Home</span></a>
+  <a href="title1.html"><i class="fas fa-book"></i> <span>Title</span></a>
+  <a href="QandAfaq.html"><i class="fas fa-question-circle"></i> <span>Q & A</span></a>
+  <a href="quiz.html"><i class="fas fa-clipboard-check"></i> <span>Quiz</span></a>
+  <a href="minigame1.html"><i class="fas fa-gamepad"></i> <span>Mini Game</span></a>
+  <a href="aboutus.html"><i class="fas fa-users"></i> <span>About Us</span></a>
+</nav>
+
+  <div class="content">
+    
+    <div class="card" id="practical">
+      <h1>National ICT Award-2025<br>Grade 10 Practical Physics</h1>
+      
+      <div>
+        <h2 style="margin-top:0;">Experiment 6: Reflection of Light</h2>
+      </div>
+
+      <h2>Aim of Experiment</h2>
+      <p>To prove that image distance equals object distance in a Plane Mirror.<br>
+      To measure the angle of incidence and angle of reflection.</p>
+
+      <hr>
+      
+      <h2>Apparatus</h2>
+      <div class="grid-container">
+            <p class="slide-btn" onclick="window.location.href='apparatusforex6.html'">Protractor</p>
+            <p class="slide-btn" onclick="window.location.href='apparatusforex6.html'">Ruler</p>
+            <p class="slide-btn" onclick="window.location.href='apparatusforex6.html'">Paper</p>
+            <p class="slide-btn" onclick="window.location.href='apparatusforex6.html'">Mirror Strip</p>
+            <p class="slide-btn" onclick="window.location.href='apparatusforex6.html'">Clip</p>
+            <p class="slide-btn" onclick="window.location.href='apparatusforex6.html'">Color Pencil</p>
+            <p class="slide-btn" onclick="window.location.href='apparatusforex6.html'">Plane Mirror</p>
+            <p class="slide-btn" onclick="window.location.href='apparatusforex6.html'">Drawing Board</p>
+      </div>
+
+      <h2>Theory</h2>
+      <p>When rays of light are incident on the plane mirror, some of the light is reflected and it follows a path as shown in Figure 1. The two rays are known as incident ray (OP) and reflected ray (PQ). The line drawn perpendicularly to the plane mirror at the point of incidence is the normal.</p>
+      
+      <div>
+        <h2>Procedure (1): Line Method</h2>
+        <p>There are a total of 9 steps to perform the experiment using the Line method.</p>
+        <img src="linemethod2.png" alt="Line Method Diagram" style="height: 570px; width: 460;">
+        <br>
+        <button class="button-glow" onclick="window.location.href='procedure1.html'">Read Detailed Steps</button>
+      </div>
+
+      <div>
+        <h2>Procedure (2): Pin Method</h2>
+        <p>There are a total of 7 steps to perform the experiment using the Pin method.</p>
+        <img src="pinmethod2.png" alt="Pin Method Diagram">
+        <br>
+        <button class="button-glow" onclick="window.location.href='procedure2.html'">Read Detailed Steps</button>  
+      </div>
+
+      <hr style="margin: 40px 0;">
+
+      <div>
+        <h2 style="margin-top:0;">Experiment 7: The Concave Mirror</h2>
+      </div>
+
+      <h2>Aim of Experiment</h2>
+      <p>To determine the focal length of a concave mirror by using the conjugate foci method.</p>
+
+      <h2>Apparatus</h2>
+        <div class="grid-container2">
+            <p class="slide-btn" onclick="window.location.href='apparatusforex7.html'">Optical Bench</p>
+            <p class="slide-btn" onclick="window.location.href='apparatusforex7.html'">Search Pins</p>
+            <p class="slide-btn" onclick="window.location.href='apparatusforex7.html'">Concave Mirror</p>
+            <p class="slide-btn" onclick="window.location.href='apparatusforex7.html'">Screen (Paper)</p>
+            <p class="slide-btn" onclick="window.location.href='apparatusforex7.html'">Meter Stick</p>
+        </div>
+
+      <h2>Theory</h2>
+      <p>A concave mirror can produce a real image of a distant object (at infinity). The position of the image is approximately equal to the focal length of the concave mirror. Since it has a real focus, the focal length is positive.</p>
+      
+      <div>
+        <h2>Procedure</h2>
+        <p>Follow the 9 steps and record your measurements.</p>
+        <img src="concavepro3.png" alt="Concave Mirror Procedure">
+        <br>
+        <button class="button-glow" onclick="window.location.href='procedure.html'">Read Detailed Steps</button>
+      </div>
+    </div> 
+
+    <div class="card" style="text-align: center;">
+        <h2 style="margin-top:0;">Download PDF</h2>
+        <p>This PDF download is for offline area. You can read wherever or whenever you are. This will help you to learn Physics Practical more easier!</p>
+        <a href="Experiment67PDF.pdf" download="Experiment67PDF.pdf" style="text-decoration: none;">
+            <button class="button-glow">
+                Download PDF<i class="fas fa-download"></i>
+            </button>
+        </a>
+    </div>
+
+    <div class="footer">
+      © 2025 Grade 10 Physics Practical | Designed by BEHS(1) Hpa-an Grade-10
+    </div>
+
+  </div>
+</body>
+</html>

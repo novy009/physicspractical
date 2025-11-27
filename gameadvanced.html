@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Neon Optics</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root { 
+      --bg:#020408; 
+      --panel:#0d1117; 
+      --accent:#00f3ff; 
+      --mirror:#ffaa00; 
+      --hit:#ff00e6; 
+      --wall:#ff2a2a; 
+      --freeze:#7df9ff; 
+      --ui-border:#30363d; 
+    }
+    body { margin:0; font-family:'Rajdhani', sans-serif; background-color:var(--bg); color:#fff; height:100vh; overflow:hidden; user-select:none; }
+    
+    .game-wrapper { display:flex; width:100%; height:100%; }
+    .viewport { flex-grow:1; position:relative; background: radial-gradient(circle at 50% 50%, #161b22 0%, #010409 100%); overflow:hidden; }
+    .sidebar { width:300px; min-width:300px; background:var(--panel); border-left:1px solid var(--ui-border); padding:20px; display:flex; flex-direction:column; gap:20px; z-index:20; }
+    
+    canvas { display:block; width:100%; height:100%; cursor: default; }
+
+    h1 { margin:0; color:var(--accent); font-size:24px; text-transform:uppercase; letter-spacing:1px; }
+    .control-panel { background:#161b22; padding:15px; border-radius:6px; border:1px solid var(--ui-border); }
+    label { display:flex; justify-content:space-between; color:#8b949e; font-size:12px; text-transform:uppercase; margin-bottom:8px; font-weight:700; }
+    
+    #overlay { position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:100; text-align:center; }
+    #startBtn { padding:15px 40px; font-size:24px; background:var(--accent); color:#000; border:none; cursor:pointer; font-family:'Rajdhani'; font-weight:bold; border-radius:4px; text-transform:uppercase; }
+    #startBtn:hover { box-shadow:0 0 20px var(--accent); transform:scale(1.05); }
+    
+    input[type=range] { width:100%; cursor:pointer; }
+    input[type=range]::-webkit-slider-thumb { background:var(--mirror); box-shadow:0 0 10px var(--mirror); }
+
+    .btn { width:100%; padding:12px; background:transparent; border:1px solid var(--accent); color:var(--accent); font-weight:bold; cursor:pointer; text-transform:uppercase; transition:0.2s; }
+    .btn:hover { background:rgba(0,243,255,0.1); }
+    .btn:disabled { border-color:#555; color:#555; cursor:not-allowed; background:transparent; }
+
+    #freezeBtn { border-color:var(--freeze); color:var(--freeze); margin-top:10px; }
+    #freezeBtn:hover { background:rgba(125, 249, 255, 0.1); box-shadow:0 0 15px var(--freeze); }
+    #freezeBar { height:4px; background:var(--freeze); width:0%; transition:width 0.1s; margin-top:5px; border-radius:2px;}
+
+    .hud { position:absolute; top:20px; left:20px; pointer-events:none; }
+    .score { font-size:32px; color:var(--accent); text-shadow:0 0 10px var(--accent); font-weight:bold; }
+    .label { font-size:12px; color:#888; text-transform:uppercase; letter-spacing:2px; }
+  </style>
+</head>
+<body>
+
+  <div class="game-wrapper">
+    <div class="viewport" id="viewport">
+      <canvas id="canvas"></canvas>
+      
+      <div class="hud">
+        <div class="label">Score</div>
+        <div class="score" id="scoreVal">0</div>
+        <div class="label" style="margin-top:10px">Level <span id="levelVal" style="color:#fff">1</span></div>
+      </div>
+
+      <div id="overlay">
+        <h1 style="font-size:40px; margin-bottom:20px;">NEON OPTICS</h1>
+        <button id="startBtn">START MISSION</button>
+        <p style="color:#888; margin-top:20px; font-size:12px;">v5</p>
+      </div>
+    </div>
+
+    <div class="sidebar">
+      <div>
+        <h1>Quantum Source</h1>
+        <p style="color:#888; font-size:12px; margin:0;">System v5.2</p>
+      </div>
+
+      <div class="control-panel">
+        <label style="color:var(--mirror);">Mirror Control <span id="angleDisplay">0°</span></label>
+        <input type="range" id="rotSlider" min="-180" max="180" value="0">
+        <p style="font-size:11px; color:#555; margin-top:5px;">
+          1. Drag <b style="color:var(--mirror)">Gold Mirror</b> to move.<br>
+          2. Drag <b style="color:var(--accent)">Blue Source</b> to aim.
+        </p>
+      </div>
+
+      <div class="control-panel">
+        <label>Abilities</label>
+        <button class="btn" id="freezeBtn">EMP BLAST (Freeze 10s)</button>
+        <div id="freezeBar"></div>
+      </div>
+
+      <div class="control-panel">
+        <label>Status</label>
+        <div id="statusText" style="font-size:13px; color:#ddd; line-height:1.4;">System Standby...</div>
+      </div>
+
+      <button class="btn" id="resetBtn" style="margin-top:auto;">Reset Sector</button>
+    </div>
+  </div>
+
+<script>
+const cvs = document.getElementById('canvas');
+const ctx = cvs.getContext('2d');
+const viewport = document.getElementById('viewport');
+const overlay = document.getElementById('overlay');
+const startBtn = document.getElementById('startBtn');
+const freezeBtn = document.getElementById('freezeBtn');
+const freezeBar = document.getElementById('freezeBar');
+
+let audioCtx = null;
+let width = 800, height = 600;
+let isRunning = false;
+let freezeEndTime = 0;
+let freezeCooldown = 0;
+
+const game = { level: 1, score: 0, charge: 0 };
+const source = { x: 50, y: 300, hover: false, dragging: false }; 
+const mirror = { x: 400, y: 300, angle: 0, w: 120, hover: false, dragging: false, dragOffX:0, dragOffY:0, showHint: true };
+const target = { x: 700, y: 300, r: 25 };
+let walls = [];
+let particles = [];
+
+function initAudio() {
+  if (!audioCtx) {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (AudioContext) audioCtx = new AudioContext();
+  }
+  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+}
+
+function playSound(type) {
+  if (!audioCtx) return;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  const now = audioCtx.currentTime;
+  
+  if (type === 'hit') {
+    osc.frequency.setValueAtTime(600, now);
+    osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
+    gain.gain.setValueAtTime(0.1, now);
+    gain.gain.linearRampToValueAtTime(0, now + 0.2);
+    osc.start(now); osc.stop(now + 0.2);
+  } else if (type === 'lvl') {
+    [440, 554, 659].forEach((f,i) => {
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.type = 'triangle'; o.frequency.value = f;
+        o.connect(g); g.connect(audioCtx.destination);
+        g.gain.setValueAtTime(0, now);
+        g.gain.linearRampToValueAtTime(0.1, now + 0.1);
+        g.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
+        o.start(now); o.stop(now + 1.5);
+    });
+  } else if (type === 'freeze') {
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(800, now);
+    osc.frequency.exponentialRampToValueAtTime(100, now + 1.0);
+    gain.gain.setValueAtTime(0.2, now);
+    gain.gain.linearRampToValueAtTime(0, now + 1.0);
+    osc.start(now); osc.stop(now + 1.0);
+  }
+}
+
+function resize() {
+  width = viewport.clientWidth;
+  height = viewport.clientHeight;
+  cvs.width = width;
+  cvs.height = height;
+  mirror.x = Math.min(width-50, Math.max(50, mirror.x));
+  mirror.y = Math.min(height-50, Math.max(50, mirror.y));
+}
+
+function initLevel() {
+  game.charge = 0;
+  mirror.showHint = true;
+  
+  document.getElementById('statusText').innerHTML = "Sector Initialized.<br><span style='color:#00f3ff'>Align Blue Ray to Target.</span>";
+  
+  source.y = height/2;
+  mirror.x = width * 0.4;
+  mirror.y = height/2;
+  mirror.angle = 0;
+  document.getElementById('rotSlider').value = 0;
+  document.getElementById('angleDisplay').innerText = "0°";
+  
+  target.x = width - 100;
+  target.y = 50 + Math.random() * (height - 100);
+  
+  walls = [];
+  const numWalls = Math.min(game.level + 1, 7);
+  for(let i=0; i<numWalls; i++) {
+    const h = 100 + Math.random() * 150;
+    walls.push({
+      x: 200 + Math.random() * (width - 400),
+      y: Math.random() * (height - h),
+      w: 20, h: h,
+      speed: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random() * 2)
+    });
+  }
+}
+
+startBtn.addEventListener('click', () => {
+  initAudio();
+  resize();
+  initLevel();
+  overlay.style.display = 'none';
+  isRunning = true;
+  loop();
+});
+
+freezeBtn.addEventListener('click', () => {
+  const now = Date.now();
+  if (now > freezeCooldown) {
+    freezeEndTime = now + 10000;
+    freezeCooldown = now + 30000;
+    playSound('freeze');
+    document.getElementById('statusText').innerHTML = "<span style='color:#7df9ff'>EMP ACTIVATED! Obstacles Frozen.</span>";
+  }
+});
+
+function getIntersection(p1, p2, p3, p4) {
+  const den = (p1.x - p2.x) * (p3.y - p4.y) - (p1.y - p2.y) * (p3.x - p4.x);
+  if (den === 0) return null;
+  const t = ((p1.x - p3.x) * (p3.y - p4.y) - (p1.y - p3.y) * (p3.x - p4.x)) / den;
+  const u = -((p1.x - p2.x) * (p1.y - p3.y) - (p1.y - p2.y) * (p1.x - p3.x)) / den;
+  if (t >= 0 && t <= 1 && u >= 0 && u <= 1) {
+    return { x: p1.x + t * (p2.x - p1.x), y: p1.y + t * (p2.y - p1.y) };
+  }
+  return null;
+}
+
+function checkWallHit(p1, p2) {
+  let hit = null, minDist = Infinity, hitObj = null;
+  walls.forEach(w => {
+    const sides = [
+      {a:{x:w.x, y:w.y}, b:{x:w.x+w.w, y:w.y}},
+      {a:{x:w.x+w.w, y:w.y}, b:{x:w.x+w.w, y:w.y+w.h}},
+      {a:{x:w.x+w.w, y:w.y+w.h}, b:{x:w.x, y:w.y+w.h}},
+      {a:{x:w.x, y:w.y+w.h}, b:{x:w.x, y:w.y}}
+    ];
+    sides.forEach(s => {
+      const int = getIntersection(p1, p2, s.a, s.b);
+      if (int) {
+        const d = Math.hypot(int.x - p1.x, int.y - p1.y);
+        if (d < minDist) { minDist = d; hit = int; hitObj = w; }
+      }
+    });
+  });
+  return { hit, hitObj, dist: minDist };
+}
+
+function update() {
+  const now = Date.now();
+  const isFrozen = now < freezeEndTime;
+
+  if (now < freezeEndTime) {
+    freezeBtn.textContent = "EMP ACTIVE (" + Math.ceil((freezeEndTime - now)/1000) + "s)";
+    freezeBtn.disabled = true;
+    freezeBar.style.width = "100%";
+    freezeBar.style.background = "#fff";
+  } else if (now < freezeCooldown) {
+    freezeBtn.textContent = "RECHARGING (" + Math.ceil((freezeCooldown - now)/1000) + "s)";
+    freezeBtn.disabled = true;
+    freezeBar.style.background = "#555";
+    freezeBar.style.width = (1 - (freezeCooldown - now)/20000) * 100 + "%";
+  } else {
+    freezeBtn.textContent = "EMP BLAST (Freeze 10s)";
+    freezeBtn.disabled = false;
+    freezeBar.style.background = "#7df9ff";
+    freezeBar.style.width = "0%";
+  }
+
+  if (game.level > 1 && !isFrozen) {
+    walls.forEach(w => {
+      w.y += w.speed;
+      if (w.y <= 0 || w.y + w.h >= height) w.speed *= -1;
+    });
+  }
+
+  const rad = mirror.angle * Math.PI / 180;
+  const mx = Math.cos(rad) * mirror.w/2;
+  const my = Math.sin(rad) * mirror.w/2;
+  const m1 = { x: mirror.x - mx, y: mirror.y - my };
+  const m2 = { x: mirror.x + mx, y: mirror.y + my };
+
+  const rStart = { x: source.x, y: source.y };
+  const rEnd = { x: width, y: source.y };
+
+  const mHit = getIntersection(rStart, rEnd, m1, m2);
+  const wHit = checkWallHit(rStart, rEnd);
+
+  let finalHit = rEnd;
+  let didReflect = false;
+  let mDist = mHit ? Math.hypot(mHit.x - rStart.x, mHit.y - rStart.y) : Infinity;
+  
+  if (mHit && mDist < wHit.dist) {
+    finalHit = mHit;
+    didReflect = true;
+  } else if (wHit.hit) {
+    finalHit = wHit.hit;
+    spawnSpark(finalHit.x, finalHit.y, '#ff2a2a');
+  }
+
+  drawBeam(rStart, finalHit, '#00f3ff');
+
+  if (didReflect) {
+    spawnSpark(finalHit.x, finalHit.y, '#ffaa00');
+    
+    const nx = -Math.sin(rad), ny = Math.cos(rad);
+    const dot = 1 * nx + 0 * ny;
+    const rx = 1 - 2 * dot * nx;
+    const ry = 0 - 2 * dot * ny;
+
+    const refEnd = { x: finalHit.x + rx * 2000, y: finalHit.y + ry * 2000 };
+    const wRefHit = checkWallHit(finalHit, refEnd);
+    
+    let finalRefHit = wRefHit.hit || refEnd;
+    drawBeam(finalHit, finalRefHit, '#00f3ff');
+
+    if (wRefHit.hit) spawnSpark(wRefHit.hit.x, wRefHit.hit.y, '#ff2a2a');
+
+    const tDist = distToSegment(target, finalHit, finalRefHit);
+    if (tDist < target.r) {
+      const dTarget = Math.hypot(target.x - finalHit.x, target.y - finalHit.y);
+      if (!wRefHit.hit || dTarget < wRefHit.dist) {
+        game.charge += 1.5; 
+        if (!isFrozen) document.getElementById('statusText').innerHTML = "LOCKED. Charging: " + Math.floor(game.charge) + "%";
+        spawnSpark(target.x, target.y, '#fff');
+        if (Math.floor(game.charge) % 10 === 0) playSound('hit');
+        if (game.charge >= 100) levelUp();
+        return;
+      }
+    }
+  }
+  
+  if (game.charge > 0) game.charge -= 2;
+}
+
+function levelUp() {
+  game.level++;
+  game.score += 100;
+  game.charge = 0;
+  freezeCooldown = 0;
+  freezeEndTime = 0;
+  document.getElementById('scoreVal').innerText = game.score;
+  document.getElementById('levelVal').innerText = game.level;
+  playSound('lvl');
+  initLevel();
+}
+
+function distToSegment(p, v, w) {
+  const l2 = (v.x - w.x)**2 + (v.y - w.y)**2;
+  if (l2 == 0) return Math.hypot(p.x - v.x, p.y - v.y);
+  let t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
+  t = Math.max(0, Math.min(1, t));
+  return Math.hypot(p.x - (v.x + t * (w.x - v.x)), p.y - (v.y + t * (w.y - v.y)));
+}
+
+function spawnSpark(x, y, c) {
+  if(Math.random()>0.5) return;
+  particles.push({ x, y, vx: (Math.random()-0.5)*4, vy: (Math.random()-0.5)*4, life: 1, color: c });
+}
+
+function drawBeam(p1, p2, c) {
+  ctx.strokeStyle = c; ctx.lineWidth = 4; ctx.shadowBlur = 15; ctx.shadowColor = c;
+  ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+  ctx.shadowBlur = 0; ctx.lineWidth = 1; ctx.strokeStyle = '#fff'; ctx.stroke();
+}
+
+function draw() {
+  ctx.fillStyle = '#020408'; ctx.fillRect(0, 0, width, height);
+
+
+  ctx.strokeStyle = '#161b22'; ctx.beginPath();
+  for(let i=0; i<width; i+=50) { ctx.moveTo(i,0); ctx.lineTo(i,height); }
+  for(let i=0; i<height; i+=50) { ctx.moveTo(0,i); ctx.lineTo(width,i); }
+  ctx.stroke();
+
+
+  ctx.strokeStyle = '#1f2937'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(50, 0); ctx.lineTo(50, height); ctx.stroke();
+
+
+  ctx.fillStyle = '#00f3ff'; 
+  if(source.hover || source.dragging) ctx.shadowColor='#00f3ff', ctx.shadowBlur=15;
+  ctx.beginPath(); ctx.arc(source.x, source.y, 12, 0, Math.PI*2); ctx.fill();
+  ctx.shadowBlur=0;
+
+
+  ctx.save(); 
+  ctx.translate(mirror.x, mirror.y); 
+  ctx.rotate(mirror.angle * Math.PI/180);
+  
+  ctx.fillStyle = '#332a1a'; ctx.fillRect(-mirror.w/2, -5, mirror.w, 10);
+  const grad = ctx.createLinearGradient(-mirror.w/2, 0, mirror.w/2, 0);
+  grad.addColorStop(0, '#ffaa00'); grad.addColorStop(0.5, '#fff'); grad.addColorStop(1, '#ffaa00');
+  ctx.fillStyle = grad;
+  if(mirror.hover || mirror.dragging) { ctx.shadowColor='#ffaa00'; ctx.shadowBlur=20; }
+  ctx.fillRect(-mirror.w/2, -2, mirror.w, 4);
+  ctx.shadowBlur=0;
+  ctx.restore();
+  
+ 
+  if (mirror.hover || mirror.dragging) {
+    ctx.strokeStyle = '#ffaa00'; ctx.globalAlpha=0.5; 
+    ctx.setLineDash([4,4]); ctx.beginPath(); ctx.arc(mirror.x, mirror.y, 45, 0, Math.PI*2); ctx.stroke(); ctx.setLineDash([]);
+    ctx.globalAlpha=1.0;
+  }
+  
+  
+  if (mirror.showHint) {
+    const t = Date.now() / 200;
+    const radius = 60 + Math.sin(t)*5;
+    ctx.save();
+    ctx.strokeStyle = '#ffaa00';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([10, 5]);
+    
+    
+    ctx.beginPath();
+    ctx.arc(mirror.x, mirror.y, radius, 0, Math.PI*2);
+    ctx.stroke();
+    
+    
+    ctx.font = "12px Rajdhani";
+    ctx.fillStyle = "#ffaa00";
+    ctx.textAlign = "center";
+    ctx.fillText("CONTROL", mirror.x, mirror.y - radius - 5);
+    
+    ctx.restore();
+  }
+
+  const now = Date.now();
+  const isFrozen = now < freezeEndTime;
+  walls.forEach(w => {
+    if (isFrozen) { ctx.fillStyle = 'rgba(125, 249, 255, 0.3)'; ctx.strokeStyle = '#7df9ff'; }
+    else { ctx.fillStyle = 'rgba(255, 42, 42, 0.2)'; ctx.strokeStyle = '#ff2a2a'; }
+    ctx.fillRect(w.x, w.y, w.w, w.h); ctx.strokeRect(w.x, w.y, w.w, w.h);
+  });
+
+
+  ctx.fillStyle = '#ff00e6'; ctx.shadowColor = '#ff00e6'; ctx.shadowBlur = 20;
+  ctx.beginPath(); ctx.arc(target.x, target.y, target.r, 0, Math.PI*2); ctx.fill();
+  ctx.shadowBlur = 0;
+  
+  if (game.charge > 0) {
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.beginPath();
+    ctx.arc(target.x, target.y, target.r + 8, 0, (Math.PI*2) * (game.charge/100)); ctx.stroke();
+  }
+
+  particles.forEach((p, i) => {
+    p.x += p.vx; p.y += p.vy; p.life -= 0.05;
+    ctx.fillStyle = p.color; ctx.globalAlpha = p.life;
+    ctx.beginPath(); ctx.arc(p.x, p.y, 2, 0, Math.PI*2); ctx.fill();
+    ctx.globalAlpha = 1;
+    if(p.life <= 0) particles.splice(i, 1);
+  });
+}
+
+function loop() {
+  if(!isRunning) return;
+  draw();
+  update();
+  requestAnimationFrame(loop);
+}
+
+document.getElementById('rotSlider').addEventListener('input', (e) => {
+  mirror.angle = parseFloat(e.target.value);
+  document.getElementById('angleDisplay').innerText = mirror.angle + "°";
+  mirror.showHint = false; 
+});
+document.getElementById('resetBtn').addEventListener('click', initLevel);
+window.addEventListener('resize', resize);
+
+cvs.addEventListener('mousedown', (e) => {
+  const r = cvs.getBoundingClientRect();
+  const mx = e.clientX - r.left, my = e.clientY - r.top;
+  
+  if (Math.hypot(mx - source.x, my - source.y) < 30) {
+    source.dragging = true;
+    return;
+  }
+
+  if (Math.hypot(mx - mirror.x, my - mirror.y) < 60) { 
+    mirror.dragging = true; 
+    mirror.dragOffX = mirror.x - mx; 
+    mirror.dragOffY = mirror.y - my; 
+    mirror.showHint = false; 
+  }
+});
+
+window.addEventListener('mousemove', (e) => {
+  const r = cvs.getBoundingClientRect();
+  const mx = e.clientX - r.left, my = e.clientY - r.top;
+  
+  source.hover = Math.hypot(mx - source.x, my - source.y) < 30;
+  mirror.hover = Math.hypot(mx - mirror.x, my - mirror.y) < 60;
+
+  if (source.dragging) {
+    source.y = Math.max(20, Math.min(height-20, my));
+    document.body.style.cursor = 'ns-resize';
+  } 
+  else if (mirror.dragging) { 
+    mirror.x = Math.max(100, Math.min(width-50, mx + mirror.dragOffX)); 
+    mirror.y = Math.max(50, Math.min(height-50, my + mirror.dragOffY)); 
+    document.body.style.cursor = 'move';
+  }
+  else if (source.hover) document.body.style.cursor = 'ns-resize';
+  else if (mirror.hover) document.body.style.cursor = 'move';
+  else document.body.style.cursor = 'default';
+});
+
+window.addEventListener('mouseup', () => { 
+  mirror.dragging = false; 
+  source.dragging = false; 
+});
+
+cvs.addEventListener('wheel', (e) => {
+  if(mirror.hover||mirror.dragging) {
+    mirror.angle += e.deltaY > 0 ? 5 : -5;
+    document.getElementById('rotSlider').value = mirror.angle;
+    document.getElementById('angleDisplay').innerText = mirror.angle + "°";
+    mirror.showHint = false; 
+  }
+});
+</script>
+</body>
+</html>
